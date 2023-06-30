@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Data;
+using NZWalks.API.Repositories;
+using NZWalks.API.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,11 @@ builder.Services.AddDbContext<NZWalksDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksConnectionString"));
 });
 // The app will manage all instances of this DbContext class whenever we call it inside controllers or repositories
+
+builder.Services.AddScoped<IRegionRepository, SqlRegionRepository>();
+
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+// This `AddAutoMapper` comes from the `AutoMapper.Extensions.Microsoft.DependencyInjection` package
 
 var app = builder.Build();
 
