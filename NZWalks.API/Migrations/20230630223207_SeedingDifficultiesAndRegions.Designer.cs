@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NZWalks.API.Data;
 
@@ -11,9 +12,11 @@ using NZWalks.API.Data;
 namespace NZWalks.API.Migrations
 {
     [DbContext(typeof(NZWalksDbContext))]
-    partial class NZWalksDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230630223207_SeedingDifficultiesAndRegions")]
+    partial class SeedingDifficultiesAndRegions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,18 +153,6 @@ namespace NZWalks.API.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("Walks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("38cf7293-a3f3-42cb-8b7d-08db79c1cb12"),
-                            Description = "This is a description",
-                            DifficultyId = new Guid("aa374cde-b1a7-44a0-b03a-c683b16556ec"),
-                            ImageUrl = "image.jpeg",
-                            LengthInKm = 8.8300000000000001,
-                            Name = "Mount Victoria Lookout Walk",
-                            RegionId = new Guid("53ddd3ff-bc43-416a-9036-c8f9aa8470bf")
-                        });
                 });
 
             modelBuilder.Entity("NZWalks.API.Models.Domain.Walk", b =>
