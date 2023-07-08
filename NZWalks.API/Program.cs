@@ -55,6 +55,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 // Adding JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
+    {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -64,8 +65,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        });
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+        // In case of 401 unauthorized and you want to know what is going on:
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = c =>
+            {
+                // break point here, debug and see the `exception` message 
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 
 var app = builder.Build();
