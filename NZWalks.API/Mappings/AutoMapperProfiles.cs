@@ -16,6 +16,12 @@ namespace NZWalks.API.Mappings
             CreateMap<Walk, WalkDto>().ReverseMap();
             CreateMap<Difficulty, DifficultyDto>().ReverseMap();
             CreateMap<UpdateWalkRequestDto, Walk>().ReverseMap();
+
+            CreateMap<ImageUploadRequestDto, Image>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FileName))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.FileDescription))
+                //.ForMember(dest => dest.Extension, opt => opt.MapFrom(src => Path.GetExtension(src.File.FileName)))
+                .ReverseMap();
         }
     }
 }
