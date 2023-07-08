@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer; //ASP.NET Core middleware t
 using Microsoft.IdentityModel.Tokens; //Includes types that provide support for SecurityTokens, Cryptographic operations: Signing, Verifying Signatures, Encryption.
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,38 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "NZ Walks API", Version = "v1" });
+
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header, // The location of the API key: [query, header, path, or cookie]
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = JwtBearerDefaults.AuthenticationScheme
+    });
+
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = JwtBearerDefaults.AuthenticationScheme
+        },
+        Scheme = "Oauth2",
+        Name = JwtBearerDefaults.AuthenticationScheme,
+        In = ParameterLocation.Header
+    };
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            securityScheme,
+            new List<string>()
+        }
+    });
+});
 
 // Dependency Injection of DbContext - We used dependency injection to inject this DBContext class which we can later on use in different places in our app. e.g. In controllers or repositories
 builder.Services.AddDbContext<NZWalksDbContext>(options =>

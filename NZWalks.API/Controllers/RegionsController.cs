@@ -13,7 +13,12 @@ namespace NZWalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class RegionsController : ControllerBase
     {
         private readonly NZWalksDbContext dbContext;
@@ -30,8 +35,7 @@ namespace NZWalks.API.Controllers
 
         [HttpGet]
         //[Route("All", Name = "GetAllRegions")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "Reader, Writer")]
         public async Task<ActionResult<List<Region>>> GetAll()
         {
             // Get data from DB (Region Domain Model)
@@ -45,9 +49,8 @@ namespace NZWalks.API.Controllers
         // GET SINGLE REGION BY ID
         [HttpGet]
         [Route("{id:Guid}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Reader, Writer")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Region>> GetById([FromRoute] Guid id)
         {
             // Get region domain model from DB
@@ -63,9 +66,8 @@ namespace NZWalks.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //[ValidateModel] // check the model before it even reaches to the action method
+        [Authorize(Roles = "Writer")]
         public async Task<ActionResult<Region>> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             // No need to this check, it will return 400 without adding this check
@@ -89,10 +91,9 @@ namespace NZWalks.API.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //[ValidateModel] // check the model before it is even reaches to the action method
+        [Authorize(Roles = "Writer")]
         public async Task<ActionResult<RegionDto>> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             // Convert the updateRegionRequestDto to domain model to pass it to regionRepository.UpdateAsync:
@@ -111,9 +112,8 @@ namespace NZWalks.API.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "Writer")]
         public async Task<ActionResult<RegionDto>> Delete([FromRoute] Guid id)
         {
             var regionDomainModel = await regionRepository.DeleteAsync(id);
