@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NZWalks.API.CustomActionFilters;
 using NZWalks.API.Data;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
@@ -11,6 +13,7 @@ namespace NZWalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RegionsController : ControllerBase
     {
         private readonly NZWalksDbContext dbContext;
@@ -60,9 +63,18 @@ namespace NZWalks.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        //[ValidateModel] // check the model before it even reaches to the action method
         public async Task<ActionResult<Region>> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
+            // No need to this check, it will return 400 without adding this check
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+
+            //}
+
             // Convert the DTO to Domain Model
             var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
 
@@ -80,6 +92,7 @@ namespace NZWalks.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        //[ValidateModel] // check the model before it is even reaches to the action method
         public async Task<ActionResult<RegionDto>> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             // Convert the updateRegionRequestDto to domain model to pass it to regionRepository.UpdateAsync:
