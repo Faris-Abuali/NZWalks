@@ -7,10 +7,24 @@ using Microsoft.IdentityModel.Tokens; //Includes types that provide support for 
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.FileProviders;
+using Serilog;
+using NZWalks.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// --- Serilog Logging
+var logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/NzWalks_Log.txt", rollingInterval: RollingInterval.Day)
+    .MinimumLevel.Warning()
+    .CreateLogger();
+
+builder.Logging.ClearProviders(); // Removes all ILoggerProviders from builder.
+builder.Logging.AddSerilog(logger); // Add Serilog to the logging pipeline
+// ---
 
 builder.Services.AddControllers();
 
@@ -125,11 +139,30 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionHandlerMiddleware>(); // Global Exception Handling
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication(); // Adds the Microsoft.AspNetCore.Authentication.AuthenticationMiddleware to the IAppApplicationBuilder to enable authentication capabilities
 
 app.UseAuthorization();
+
+/***
+ * This means that when a request is made to a URL like "https://localhost:port/Images/file.jpg", 
+ * the static file middleware will attempt to find and serve the corresponding file from the "Images" directory specified by the PhysicalFileProvider.
+ */
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")), // exposes the contents of a physical directory on the file system.
+    RequestPath = "/Images"  // specifies the URL path at which the static files will be served.
+});
+
+// You can add another middleware registration un case you need to expose another physical directory to another RequestPath
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Uploads")), // exposes the contents of a physical directory on the file system.
+    RequestPath = "/Uploads"  // specifies the URL path at which the static files will be served.
+});
 
 app.MapControllers();
 

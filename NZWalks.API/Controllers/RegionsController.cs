@@ -8,6 +8,7 @@ using NZWalks.API.Data;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
+using System.Text.Json;
 
 namespace NZWalks.API.Controllers
 {
@@ -24,12 +25,23 @@ namespace NZWalks.API.Controllers
         private readonly NZWalksDbContext dbContext;
         private readonly IRegionRepository regionRepository;
         private readonly IMapper mapper; // AutoMapper between DTO and Domain objects
+        private readonly ILogger<RegionsController> logger;
+        private readonly JsonSerializerOptions jsonOptions;
 
-        public RegionsController(NZWalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
+        public RegionsController(NZWalksDbContext dbContext, 
+            IRegionRepository regionRepository, 
+            IMapper mapper,
+            ILogger<RegionsController> logger)
         {
             this.dbContext = dbContext;
             this.regionRepository = regionRepository;
             this.mapper = mapper;
+            this.logger = logger;
+
+            this.jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
         }
 
 
@@ -38,12 +50,20 @@ namespace NZWalks.API.Controllers
         [Authorize(Roles = "Reader, Writer")]
         public async Task<ActionResult<List<Region>>> GetAll()
         {
-            // Get data from DB (Region Domain Model)
-            var regionsDomain = await regionRepository.GetAllAsync();
-            // The main thread will not be blocked when the execution delays
+            try
+            {
+                // Get data from DB (Region Domain Model)
+                var regionsDomain = await regionRepository.GetAllAsync();
+                // The main thread will not be blocked when the execution delays
 
-            // Map domain models to DTOs
-            return Ok(mapper.Map<List<RegionDto>>(regionsDomain)); // TDestination Map<TDestination>(object source);
+                // Map domain models to DTOs
+                return Ok(mapper.Map<List<RegionDto>>(regionsDomain)); // TDestination Map<TDestination>(object source);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+                throw;
+            }
         }
 
         // GET SINGLE REGION BY ID
