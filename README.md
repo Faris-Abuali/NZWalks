@@ -6,6 +6,8 @@ https://www.udemy.com/share/106wyO3@FNiotWd5x0c81JBTs-tfZpqvDOAnD--EtWsQRymAJP7A
 
 ![image](https://github.com/Faris-Abuali/NZWalks/assets/54215462/2e485d8b-af85-433f-b614-d4b0819bb86f)
 
+Original Repo:
+https://github.com/sameer8saini/NZWalks-Solution/tree/master
 
 ## Course Outcomes
 
