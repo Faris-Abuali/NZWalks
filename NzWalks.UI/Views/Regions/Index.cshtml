@@ -1,0 +1,28 @@
+﻿@model IEnumerable<NzWalks.UI.Models.DTO.RegionDto>
+
+<h1 class="mt-3">Regions</h1>
+
+@*@if (ViewBag.Response is not null)
+{
+    <p>@ViewBag.Response</p>
+}*@
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Code</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var walk in Model)
+        {
+            <tr>
+                <td>@walk.Id</td>
+                <td>@walk.Code</td>
+                <td>@walk.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>

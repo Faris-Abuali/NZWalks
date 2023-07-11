@@ -47,7 +47,7 @@ namespace NZWalks.API.Controllers
 
         [HttpGet]
         //[Route("All", Name = "GetAllRegions")]
-        [Authorize(Roles = "Reader, Writer")]
+        //[Authorize(Roles = "Reader, Writer")]
         public async Task<ActionResult<List<Region>>> GetAll()
         {
             try
@@ -69,7 +69,7 @@ namespace NZWalks.API.Controllers
         // GET SINGLE REGION BY ID
         [HttpGet]
         [Route("{id:Guid}")]
-        [Authorize(Roles = "Reader, Writer")]
+        //[Authorize(Roles = "Reader, Writer")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Region>> GetById([FromRoute] Guid id)
         {
@@ -87,7 +87,7 @@ namespace NZWalks.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         //[ValidateModel] // check the model before it even reaches to the action method
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<ActionResult<Region>> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             // No need to this check, it will return 400 without adding this check
@@ -113,7 +113,7 @@ namespace NZWalks.API.Controllers
         [Route("{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         //[ValidateModel] // check the model before it is even reaches to the action method
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<ActionResult<RegionDto>> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             // Convert the updateRegionRequestDto to domain model to pass it to regionRepository.UpdateAsync:
@@ -133,7 +133,7 @@ namespace NZWalks.API.Controllers
         [HttpDelete]
         [Route("{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<ActionResult<RegionDto>> Delete([FromRoute] Guid id)
         {
             var regionDomainModel = await regionRepository.DeleteAsync(id);
